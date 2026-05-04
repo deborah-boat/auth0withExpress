@@ -17,24 +17,20 @@ app.use(
 );
 
 app.get("/", (req, res) => {
+  res.json({ message: "Auth0 Express server is running." });
+});
+
+app.get("/login", (req, res) => {
   return res.oidc.login({ returnTo: "http://localhost:5173/profile" });
 });
 
-app.get("/profile", requiresAuth(), (req, res) => {
-  try {
-    res.json(req.oidc.user);
-  } catch (error) {
-    console.log(error);
-  }
+app.get("/logout", (req, res) => {
+  return res.oidc.logout({ returnTo: "http://localhost:5173" });
 });
 
-// Protected route
-// app.get("/secure-data", verifyToken, (req, res) => {
-//   res.json({
-//     message: "This is protected data",
-//     user: req.user, // Decoded token info
-//   });
-// });
+app.get("/profile", requiresAuth(), (req, res) => {
+  res.json(req.oidc.user);
+});
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
